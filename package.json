@@ -6,7 +6,8 @@
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-scripts": "1.0.12",
-    "web3": "0.17.0-alpha"
+    "web3": "0.17.0-alpha",
+    "lodash": "4.17.4"
   },
   "scripts": {
     "start": "react-scripts start",

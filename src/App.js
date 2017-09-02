@@ -1,21 +1,86 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import Web3 from 'web3';
+import _ from 'lodash';
 
+var ETHEREUM_CLIENT = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+
+var peopleContractABI = [{"constant":true,"inputs":[],"name":"getPeople","outputs":[{"name":"","type":"bytes32[]"},{"name":"","type":"bytes32[]"},{"name":"","type":"uint256[]"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_firstName","type":"bytes32"},{"name":"_lastName","type":"bytes32"},{"name":"_age","type":"uint256"}],"name":"addPerson","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"people","outputs":[{"name":"firstName","type":"bytes32"},{"name":"lastName","type":"bytes32"},{"name":"age","type":"uint256"}],"payable":false,"type":"function"}];
+
+var peopleContractAddress = '0x6960c49abba4c55d726c1f46957af2e4fcd54d76';
+
+var peopleContract = ETHEREUM_CLIENT.eth.contract(peopleContractABI).at(peopleContractAddress);
+
+console.log(peopleContract);
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to dSpp built with React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            firstNames: [],
+            lastNames: [],
+            ages: []
+        }
+    }
+
+    componentWillMount() {
+        var data = peopleContract.getPeople();
+
+        this.setState({
+            firstNames: String(data[0]).split(','),
+            lastNames: String(data[1]).split(','),
+            ages: String(data[2]).split(',')
+        });
+    }
+
+    render() {
+        var TableRows = [];
+
+        var hex_to_ascii = function(str1) {
+            var hex  = str1.toString();
+            var str = '';
+            for (var n = 0; n < hex.length; n += 2) {
+                str += parseInt(hex.substr(n, 2), 16) === 0 ? '' : String.fromCharCode(parseInt(hex.substr(n, 2), 16));
+              //str += String.fromCharCode(parseInt(hex.substr(n, 2), 16));
+            }
+            return str;
+        };
+
+        _.each(this.state.firstNames, (val,i) => {
+            TableRows.push(
+                <tr>
+                    <td>{hex_to_ascii(this.state.firstNames[i])}</td>
+                    <td>{hex_to_ascii(this.state.lastNames[i])}</td>
+                    <td>{this.state.ages[i]}</td>
+                </tr>
+            );
+        });
+
+        return (
+            <div className="App">
+                <div className="App-header">
+                    <img src={logo} className="App-logo" alt="logo" />
+                    <h2>Welcome to dApp built with React</h2>
+                </div>
+                <div className="App-content">
+
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Age</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {TableRows}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
     );
-  }
+}
 }
 
 export default App;

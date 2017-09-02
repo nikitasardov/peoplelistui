@@ -18,6 +18,19 @@
   font-size: large;
 }
 
+.table {
+  max-width: 100%;
+  border-collapse: collapse;
+}
+
+.table td{
+  border: 1px solid gray;
+  max-width: 300px;
+  overflow: hidden;
+  padding: 5px;
+}
+
+
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
