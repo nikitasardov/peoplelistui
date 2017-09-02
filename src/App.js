@@ -24,6 +24,12 @@ class App extends Component {
         }
     }
 
+    pushPerson(/*_firstName, _lastName, _age*/) {
+        peopleContract.addPerson('asdasda','asdasd',56);
+        //peopleContract.addPerson(/*_firstName, _lastName, _age*/'asdasda','asdasd',56);
+        //this.setState({deadline: this.state.newDeadline})
+    }
+
     componentWillMount() {
         var data = peopleContract.getPeople();
 
@@ -77,10 +83,19 @@ class App extends Component {
                             {TableRows}
                         </tbody>
                     </table>
+
+                    <input placeholder='First Name'/>
+                    <input placeholder='Last Name'/>
+                    <input placeholder='Age'/>
+
+                    <button onClick={() => this.pushPerson()}>
+                        Submit
+                    </button>
+
                 </div>
             </div>
-    );
-}
+        );
+    }
 }
 
 export default App;
