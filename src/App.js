@@ -42,8 +42,16 @@ class App extends Component {
     }
 
     pushPerson() {
-        //_firstName, _lastName, _age
-       // peopleContract.addPerson.sendTransaction(_firstName, _lastName, _age, {from: ETHEREUM_CLIENT.eth.accounts[0], gas: 3000000});
+        peopleContract
+            .addPerson
+            .sendTransaction(
+                this.state.newFName,
+                this.state.newFName,
+                this.state.newAge,
+                {
+                    from: ETHEREUM_CLIENT.eth.accounts[0],
+                    gas: 3000000
+                });
         this.getPeopleList();
     }
 
@@ -62,7 +70,7 @@ class App extends Component {
     }
 
     render() {
-        var TableRows = [];
+        var peopleList = [];
 
         var hex_to_ascii = function(str1) {
             var hex  = str1.toString();
@@ -73,14 +81,26 @@ class App extends Component {
             }
             return str;
         };
+/*
+        for(var i = this.state.firstNames.length; i >= 0; i--) {
+            peopleList.push(
+                <div className="list__row">
+                    <div className="list__30">{hex_to_ascii(this.state.firstNames[i])}</div>
+                    <div className="list__30">{hex_to_ascii(this.state.lastNames[i])}</div>
+                    <div className="list__30">{this.state.ages[i]}</div>
+                </div>
+            );
+        }*/
+
 
         _.each(this.state.firstNames, (val,i) => {
-            TableRows.push(
-                <tr>
-                    <td>{hex_to_ascii(this.state.firstNames[i])}</td>
-                    <td>{hex_to_ascii(this.state.lastNames[i])}</td>
-                    <td>{this.state.ages[i]}</td>
-                </tr>
+            //var r = this.state.firstNames.length - i-1;
+            peopleList.unshift(
+                <div className="list__row">
+                    <div className="list__30">{hex_to_ascii(this.state.firstNames[i])}</div>
+                    <div className="list__30">{hex_to_ascii(this.state.lastNames[i])}</div>
+                    <div className="list__30">{this.state.ages[i]}</div>
+                </div>
             );
         });
 
@@ -91,27 +111,26 @@ class App extends Component {
                     <h2>Welcome to dApp built with React</h2>
                 </div>
                 <div className="App-content">
-
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Age</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {TableRows}
-                        </tbody>
-                    </table>
-
-                    <input placeholder='First Name' value={this.state.newFName} onChange={event => this.setState({newFName: event.target.value})}/>
-                    <input placeholder='Last Name' value={this.state.newLName} onChange={event => this.setState({newLName: event.target.value})}/>
-                    <input placeholder='Age' value={this.state.newAge} onChange={event => this.setState({newAge: event.target.value})}/>
+                    <div className="list list__row">
+                        <input className="list__30" placeholder='First Name' onChange={event => this.setState({newFName: event.target.value})}/>
+                        <input className="list__30" placeholder='Last Name' onChange={event => this.setState({newLName: event.target.value})}/>
+                        <input className="list__30" placeholder='Age' onChange={event => this.setState({newAge: event.target.value})}/>
+                    </div>
 
                     <button onClick={() => this.pushPerson()}>
                         Submit
                     </button>
+
+                    <div className="list">
+                        <div className="list__row list__head">
+                            <div className="list__30">First Name</div>
+                            <div className="list__30">Last Name</div>
+                            <div className="list__30">Age</div>
+                        </div>
+                        <div>
+                            {peopleList}
+                        </div>
+                    </div>
 
                 </div>
             </div>
