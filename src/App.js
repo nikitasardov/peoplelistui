@@ -13,6 +13,20 @@ var peopleContractAddress = '0x836dbfdbf39c11064cffd5e6e0c9e198d6448e9a';
 var peopleContract = ETHEREUM_CLIENT.eth.contract(peopleContractABI).at(peopleContractAddress);
 
 console.log(peopleContract);
+
+// ETHEREUM_CLIENT.fromWei(ETHEREUM_CLIENT.eth.getBalance(ETHEREUM_CLIENT.eth.coinbase), "ether");
+// function checkAllBalances() {
+//     var totalBal = 0;
+//     for (var acctNum in ETHEREUM_CLIENT.eth.accounts) {
+//         var acct = ETHEREUM_CLIENT.eth.accounts[acctNum];
+//         var acctBal = ETHEREUM_CLIENT.fromWei(ETHEREUM_CLIENT.eth.getBalance(acct), "ether");
+//         totalBal += parseFloat(acctBal);
+//         console.log("  eth.accounts[" + acctNum + "]: \t" + acct + " \tbalance: " + acctBal + " ether");
+//     }
+//     console.log("  Total balance: " + totalBal + " ether");
+//};
+//checkAllBalances();
+
 class App extends Component {
 
     constructor(props) {
@@ -20,24 +34,31 @@ class App extends Component {
         this.state = {
             firstNames: [],
             lastNames: [],
-            ages: []
+            ages: [],
+            newFName: '',
+            newLName: '',
+            newAge: ''
         }
     }
 
-    pushPerson(/*_firstName, _lastName, _age*/) {
-        peopleContract.addPerson('asdasda','asdasd',56);
-        //peopleContract.addPerson(/*_firstName, _lastName, _age*/'asdasda','asdasd',56);
-        //this.setState({deadline: this.state.newDeadline})
+    pushPerson() {
+        //_firstName, _lastName, _age
+       // peopleContract.addPerson.sendTransaction(_firstName, _lastName, _age, {from: ETHEREUM_CLIENT.eth.accounts[0], gas: 3000000});
+        this.getPeopleList();
     }
 
-    componentWillMount() {
+    getPeopleList() {
         var data = peopleContract.getPeople();
-
+        // console.log(data);
         this.setState({
             firstNames: String(data[0]).split(','),
             lastNames: String(data[1]).split(','),
             ages: String(data[2]).split(',')
         });
+    }
+
+    componentWillMount() {
+        this.getPeopleList();
     }
 
     render() {
@@ -84,9 +105,9 @@ class App extends Component {
                         </tbody>
                     </table>
 
-                    <input placeholder='First Name'/>
-                    <input placeholder='Last Name'/>
-                    <input placeholder='Age'/>
+                    <input placeholder='First Name' value={this.state.newFName} onChange={event => this.setState({newFName: event.target.value})}/>
+                    <input placeholder='Last Name' value={this.state.newLName} onChange={event => this.setState({newLName: event.target.value})}/>
+                    <input placeholder='Age' value={this.state.newAge} onChange={event => this.setState({newAge: event.target.value})}/>
 
                     <button onClick={() => this.pushPerson()}>
                         Submit

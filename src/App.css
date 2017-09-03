@@ -18,9 +18,15 @@
   font-size: large;
 }
 
+.App-content {
+
+}
+
 .table {
   max-width: 100%;
   border-collapse: collapse;
+  margin: 0 auto;
+  margin-bottom: 10px;
 }
 
 .table td{
