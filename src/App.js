@@ -6,9 +6,9 @@ import _ from 'lodash';
 
 var ETHEREUM_CLIENT = new Web3(new Web3.providers.HttpProvider("http://91.201.41.52:8545"));
 
-var peopleContractABI = [{"constant":true,"inputs":[],"name":"getPeople","outputs":[{"name":"","type":"bytes32[]"},{"name":"","type":"bytes32[]"},{"name":"","type":"uint256[]"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_firstName","type":"bytes32"},{"name":"_lastName","type":"bytes32"},{"name":"_age","type":"uint256"}],"name":"addPerson","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"people","outputs":[{"name":"firstName","type":"bytes32"},{"name":"lastName","type":"bytes32"},{"name":"age","type":"uint256"}],"payable":false,"type":"function"}];
+var peopleContractABI = [{"constant":true,"inputs":[],"name":"getPeople","outputs":[{"name":"","type":"uint256[]"},{"name":"","type":"bytes32[]"},{"name":"","type":"bytes32[]"},{"name":"","type":"uint256[]"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_id","type":"uint256"},{"name":"_firstName","type":"bytes32"},{"name":"_lastName","type":"bytes32"},{"name":"_age","type":"uint256"}],"name":"addPerson","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"people","outputs":[{"name":"id","type":"uint256"},{"name":"firstName","type":"bytes32"},{"name":"lastName","type":"bytes32"},{"name":"age","type":"uint256"}],"payable":false,"type":"function"}];
 
-var peopleContractAddress = '0x836dbfdbf39c11064cffd5e6e0c9e198d6448e9a';
+var peopleContractAddress = '0x737aa453e1eda4ef37366ab80c5e4188a06e2db5';
 
 var peopleContract = ETHEREUM_CLIENT.eth.contract(peopleContractABI).at(peopleContractAddress);
 
@@ -32,9 +32,11 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            ids: [],
             firstNames: [],
             lastNames: [],
             ages: [],
+            newId: '',
             newFName: '',
             newLName: '',
             newAge: ''
@@ -45,8 +47,9 @@ class App extends Component {
         peopleContract
             .addPerson
             .sendTransaction(
+                parseInt(Date.now()),
                 this.state.newFName,
-                this.state.newFName,
+                this.state.newLName,
                 this.state.newAge,
                 {
                     from: ETHEREUM_CLIENT.eth.accounts[0],
@@ -59,6 +62,7 @@ class App extends Component {
         var data = peopleContract.getPeople();
         // console.log(data);
         this.setState({
+            ids: String(data[2]).split(','),
             firstNames: String(data[0]).split(','),
             lastNames: String(data[1]).split(','),
             ages: String(data[2]).split(',')
@@ -96,7 +100,7 @@ class App extends Component {
         _.each(this.state.firstNames, (val,i) => {
             //var r = this.state.firstNames.length - i-1;
             peopleList.unshift(
-                <div className="list__row">
+                <div className="list__row" data-id={this.state.ids[i]}>
                     <div className="list__30">{hex_to_ascii(this.state.firstNames[i])}</div>
                     <div className="list__30">{hex_to_ascii(this.state.lastNames[i])}</div>
                     <div className="list__30">{this.state.ages[i]}</div>
@@ -114,7 +118,7 @@ class App extends Component {
                     <div className="list list__row">
                         <input className="list__30" placeholder='First Name' onChange={event => this.setState({newFName: event.target.value})}/>
                         <input className="list__30" placeholder='Last Name' onChange={event => this.setState({newLName: event.target.value})}/>
-                        <input className="list__30" placeholder='Age' onChange={event => this.setState({newAge: event.target.value})}/>
+                        <input className="list__30" placeholder='Age' type="number" onChange={event => this.setState({newAge: event.target.value})}/>
                     </div>
 
                     <button onClick={() => this.pushPerson()}>
