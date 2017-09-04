@@ -25,6 +25,7 @@
 .list {
   max-width: 90%;
   margin: 20px auto 10px;
+  overflow: hidden;
 }
 
 .list__head {
@@ -41,7 +42,7 @@
   width: 90%;
 }
 
-.list__row-wrap:last-child {
+.list__row-wrap:last-child .list__row {
   border-bottom: 1px solid #ccc;
 }
 
@@ -64,6 +65,35 @@
   border-right: 0;
 }
 
+.form__row-wrap {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  max-width: 90%;
+  margin: 20px auto 10px;
+  overflow: hidden;
+}
+
+.form__row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  border: 1px solid #ccc;
+  position: relative;
+  width: 90%;
+}
+
+.form__input30 {
+  width: 30%;
+  padding: 5px;
+  font-size: 14px;
+  border: 0;
+  border-right: 1px solid #ccc;
+}
+
+.form__input30:last-child {
+  border-right: 0;
+}
 
 .list__5--head {
   position: absolute;
@@ -74,8 +104,8 @@
 }
 
 .list__5 {
+  left: 91%;
   position: absolute;
-  right: 0;
   cursor: pointer;
   //width: 5%;
   color: #ccc;

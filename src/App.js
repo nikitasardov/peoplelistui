@@ -6,9 +6,9 @@ import Web3 from 'web3';
 
 var ETHEREUM_CLIENT = new Web3(new Web3.providers.HttpProvider("http://91.201.41.52:8545"));
 
-var peopleContractABI = [{"constant":true,"inputs":[],"name":"getPeople","outputs":[{"name":"","type":"uint256[]"},{"name":"","type":"bytes32[]"},{"name":"","type":"bytes32[]"},{"name":"","type":"uint256[]"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_id","type":"uint256"},{"name":"_firstName","type":"bytes32"},{"name":"_lastName","type":"bytes32"},{"name":"_age","type":"uint256"}],"name":"addPerson","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"people","outputs":[{"name":"id","type":"uint256"},{"name":"firstName","type":"bytes32"},{"name":"lastName","type":"bytes32"},{"name":"age","type":"uint256"}],"payable":false,"type":"function"}];
+var peopleContractABI = [{"constant":true,"inputs":[],"name":"getPeople","outputs":[{"name":"","type":"uint256[]"},{"name":"","type":"bytes32[]"},{"name":"","type":"bytes32[]"},{"name":"","type":"uint256[]"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_id","type":"uint256"},{"name":"newFirstName","type":"bytes32"},{"name":"newLastName","type":"bytes32"},{"name":"newAge","type":"uint256"}],"name":"updatePerson","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"id","type":"uint256"}],"name":"dropPerson","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_id","type":"uint256"},{"name":"_firstName","type":"bytes32"},{"name":"_lastName","type":"bytes32"},{"name":"_age","type":"uint256"}],"name":"addPerson","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"people","outputs":[{"name":"id","type":"uint256"},{"name":"firstName","type":"bytes32"},{"name":"lastName","type":"bytes32"},{"name":"age","type":"uint256"}],"payable":false,"type":"function"}];
 
-var peopleContractAddress = '0x737aa453e1eda4ef37366ab80c5e4188a06e2db5';
+var peopleContractAddress = '0xb5008265f7ea9b584d61f4644edfa160e3d2aab6';
 
 var peopleContract = ETHEREUM_CLIENT.eth.contract(peopleContractABI).at(peopleContractAddress);
 
@@ -58,6 +58,19 @@ class App extends Component {
         this.getPeopleList();
     }
 
+    removePerson(id) {
+        peopleContract
+            .dropPerson
+            .sendTransaction(
+                id,
+                {
+                    from: ETHEREUM_CLIENT.eth.accounts[0],
+                    gas: 3000000
+                });
+        this.getPeopleList();
+        console.log(id);
+    }
+
     getPeopleList() {
         let data = peopleContract.getPeople();
         // console.log(data);
@@ -99,7 +112,11 @@ class App extends Component {
                         <div className="list__30">{hexToAscii(this.state.lastNames[i])}</div>
                         <div className="list__30">{this.state.ages[i]}</div>
                     </div>
-                    <div className="list__5" data-id={this.state.ids[i]}>X</div>
+                    <div className="list__5"
+                         id={this.state.ids[i]}
+                         onClick={event => this.removePerson(event.target.id)}>
+                            X
+                    </div>
                 </div>
             );
         });
@@ -111,13 +128,21 @@ class App extends Component {
                     <h2>Welcome to dApp built with React</h2>
                 </div>
                 <div className="App-content">
-                    <div className="list__row-wrap">
-                        <div className="list list__row">
-                            <input className="list__30" value={this.state.newFName} placeholder='First Name' onChange={event => this.setState({newFName: event.target.value})}/>
-                            <input className="list__30" placeholder='Last Name' onChange={event => this.setState({newLName: event.target.value})}/>
-                            <input className="list__30" placeholder='Age' type="number" onChange={event => this.setState({newAge: event.target.value})}/>
+                    <div className="form__row-wrap">
+                        <div className="form__row">
+                            <input className="form__input30"
+                                   value={this.state.newFName}
+                                   placeholder='First Name'
+                                   onChange={event => this.setState({newFName: event.target.value})}/>
+
+                            <input className="form__input30"
+                                   placeholder='Last Name'
+                                   onChange={event => this.setState({newLName: event.target.value})}/>
+
+                            <input className="form__input30"
+                                   placeholder='Age' type="number"
+                                   onChange={event => this.setState({newAge: event.target.value})}/>
                         </div>
-                        <div className="list__5--head"></div>
                     </div>
 
                     <button onClick={() => this.pushPerson()}>
@@ -131,7 +156,6 @@ class App extends Component {
                                 <div className="list__30">Last Name</div>
                                 <div className="list__30">Age</div>
                             </div>
-                            <div className="list__5--head"></div>
                         </div>
                         <div>
                             {peopleList}
