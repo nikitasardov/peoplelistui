@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Web3 from 'web3';
-import _ from 'lodash';
+//import _ from 'lodash';
 
 var ETHEREUM_CLIENT = new Web3(new Web3.providers.HttpProvider("http://91.201.41.52:8545"));
 
@@ -59,13 +59,13 @@ class App extends Component {
     }
 
     getPeopleList() {
-        var data = peopleContract.getPeople();
+        let data = peopleContract.getPeople();
         // console.log(data);
         this.setState({
-            ids: String(data[2]).split(','),
-            firstNames: String(data[0]).split(','),
-            lastNames: String(data[1]).split(','),
-            ages: String(data[2]).split(',')
+            ids: String(data[0]).split(','),
+            firstNames: String(data[1]).split(','),
+            lastNames: String(data[2]).split(','),
+            ages: String(data[3]).split(',')
         });
     }
 
@@ -74,36 +74,32 @@ class App extends Component {
     }
 
     render() {
-        var peopleList = [];
+        let peopleList = [];
 
-        var hex_to_ascii = function(str1) {
-            var hex  = str1.toString();
-            var str = '';
-            for (var n = 0; n < hex.length; n += 2) {
-                str += parseInt(hex.substr(n, 2), 16) === 0 ? '' : String.fromCharCode(parseInt(hex.substr(n, 2), 16));
-              //str += String.fromCharCode(parseInt(hex.substr(n, 2), 16));
+        let hexToAscii = function(hex) {
+            var str = '',
+                i = 0,
+                l = hex.length;
+            if (hex.substring(0, 2) === '0x') {
+                i = 2;
+            }
+            for (; i < l; i+=2) {
+                var code = parseInt(hex.substr(i, 2), 16);
+                if (code === 0) continue; // this is added
+                str += String.fromCharCode(code);
             }
             return str;
         };
-/*
-        for(var i = this.state.firstNames.length; i >= 0; i--) {
-            peopleList.push(
-                <div className="list__row">
-                    <div className="list__30">{hex_to_ascii(this.state.firstNames[i])}</div>
-                    <div className="list__30">{hex_to_ascii(this.state.lastNames[i])}</div>
-                    <div className="list__30">{this.state.ages[i]}</div>
-                </div>
-            );
-        }*/
 
-
-        _.each(this.state.firstNames, (val,i) => {
-            //var r = this.state.firstNames.length - i-1;
+        this.state.firstNames.forEach((item, i) => {
             peopleList.unshift(
-                <div className="list__row" data-id={this.state.ids[i]}>
-                    <div className="list__30">{hex_to_ascii(this.state.firstNames[i])}</div>
-                    <div className="list__30">{hex_to_ascii(this.state.lastNames[i])}</div>
-                    <div className="list__30">{this.state.ages[i]}</div>
+                <div className="list__row-wrap">
+                    <div className="list__row">
+                        <div className="list__30">{hexToAscii(this.state.firstNames[i])}</div>
+                        <div className="list__30">{hexToAscii(this.state.lastNames[i])}</div>
+                        <div className="list__30">{this.state.ages[i]}</div>
+                    </div>
+                    <div className="list__5" data-id={this.state.ids[i]}>X</div>
                 </div>
             );
         });
@@ -115,10 +111,13 @@ class App extends Component {
                     <h2>Welcome to dApp built with React</h2>
                 </div>
                 <div className="App-content">
-                    <div className="list list__row">
-                        <input className="list__30" placeholder='First Name' onChange={event => this.setState({newFName: event.target.value})}/>
-                        <input className="list__30" placeholder='Last Name' onChange={event => this.setState({newLName: event.target.value})}/>
-                        <input className="list__30" placeholder='Age' type="number" onChange={event => this.setState({newAge: event.target.value})}/>
+                    <div className="list__row-wrap">
+                        <div className="list list__row">
+                            <input className="list__30" value={this.state.newFName} placeholder='First Name' onChange={event => this.setState({newFName: event.target.value})}/>
+                            <input className="list__30" placeholder='Last Name' onChange={event => this.setState({newLName: event.target.value})}/>
+                            <input className="list__30" placeholder='Age' type="number" onChange={event => this.setState({newAge: event.target.value})}/>
+                        </div>
+                        <div className="list__5--head"></div>
                     </div>
 
                     <button onClick={() => this.pushPerson()}>
@@ -126,10 +125,13 @@ class App extends Component {
                     </button>
 
                     <div className="list">
-                        <div className="list__row list__head">
-                            <div className="list__30">First Name</div>
-                            <div className="list__30">Last Name</div>
-                            <div className="list__30">Age</div>
+                        <div className="list__row-wrap">
+                            <div className="list__row list__head">
+                                <div className="list__30">First Name</div>
+                                <div className="list__30">Last Name</div>
+                                <div className="list__30">Age</div>
+                            </div>
+                            <div className="list__5--head"></div>
                         </div>
                         <div>
                             {peopleList}
