@@ -1,140 +1,111 @@
 .App {
-  text-align: center;
+    text-align: center;
 }
 
 .App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+    animation: App-logo-spin infinite 20s linear;
+    height: 80px;
 }
 
 .App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
+    background-color: #222;
+    height: 150px;
+    padding: 20px;
+    color: white;
 }
 
 .App-intro {
-  font-size: large;
+    font-size: large;
 }
 
 .App-content {
-  padding-top: 30px;
 }
 
 .list {
-  max-width: 90%;
-  margin: 20px auto 10px;
-  overflow: hidden;
+    width: 90%;
+    max-width: 500px;
+    margin: 20px auto 10px;
 }
 
 .list__head {
-  font-weight: 600;
-  background: #fff!important;
+    font-weight: 600;
+    background: #fff!important;
 }
 
 .list__row {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  border: 1px solid #ccc;
-  border-bottom: 0;
-  position: relative;
-  width: 90%;
-  transition-property: background;
-  transition-duration: 0.3s;
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+    border: 1px solid #ccc;
+    border-bottom: 0;
+    position: relative;
+    width: 90%;
+    transition-property: background;
+    transition-duration: 0.3s;
 }
 
 .list__row-wrap:hover .list__row + .list__5 {
-  color: #ccc;
+    color: #ccc;
 }
 
 .list__row-wrap:hover .list__row {
-  background: #eee;
+    background: #eee;
 }
 
 .list__row-wrap:last-child .list__row {
-  border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
 }
 
 .list__row-wrap {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    position: relative;
 }
 
 .list__30 {
-  border-right: 1px solid #ccc;
-  width: 30%;
-  overflow: hidden;
-  padding: 5px;
-  font-size: 14px;
-  color: #555;
-  text-align: left;
+    border-right: 1px solid #ccc;
+    max-width: 33%;
+    width: 166px;
+    overflow: hidden;
+    padding: 5px;
+    font-size: 14px;
+    color: #555;
+    text-align: left;
 }
 
 .list__30:last-child {
-  border-right: 0;
-}
-
-.form__row-wrap {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  max-width: 90%;
-  margin: 20px auto 10px;
-  overflow: hidden;
-}
-
-.form__row {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  border: 1px solid #ccc;
-  position: relative;
-  width: 90%;
-}
-
-.form__input30 {
-  width: 30%;
-  padding: 5px;
-  font-size: 14px;
-  border: 0;
-  border-right: 1px solid #ccc;
-}
-
-.form__input30:last-child {
-  border-right: 0;
+    border-right: 0;
 }
 
 .list__5--head {
-  position: absolute;
-  border: 0;
-  width: 5%;
-  //padding: 5px;
-  background: transparent;
+    position: absolute;
+    border: 0;
+    width: 5%;
+    //padding: 5px;
+    background: transparent;
 }
 
 .list__5 {
-  left: 91%;
-  margin-top: -2px;
-  position: absolute;
-  cursor: pointer;
-  //width: 5%;
-  color: transparent;
-  font-weight: 100;
-  font-size: 20px;
-  overflow: hidden;
-  padding: 5px;
-  transition-property: color;
-  transition-duration: 0.3s;
+    left: 95%;
+    margin-top: -2px;
+    position: absolute;
+    cursor: pointer;
+    //width: 5%;
+    color: transparent;
+    font-weight: 100;
+    font-size: 20px;
+    overflow: hidden;
+    padding: 5px;
+    transition-property: color;
+    transition-duration: 0.3s;
 }
 
 .list__5:hover {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 @keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }

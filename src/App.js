@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import './Form.css';
 import Web3 from 'web3';
 //import _ from 'lodash';
 
@@ -44,6 +45,21 @@ class App extends Component {
     }
 
     pushPerson() {
+        if (this.state.newFName === '' ||
+            this.state.newLName === '' ||
+            this.state.newAge === '') {
+
+                let form = document.getElementsByClassName('form__row')[0];
+                form.classList.add('form__row--error');
+
+                setTimeout(() => {
+                    form.classList.remove('form__row--error');
+                },1000);
+
+                console.log('nothing');
+                return false;
+            }
+
         peopleContract
             .addPerson
             .sendTransaction(
@@ -78,7 +94,11 @@ class App extends Component {
             ids: String(data[0]).split(','),
             firstNames: String(data[1]).split(','),
             lastNames: String(data[2]).split(','),
-            ages: String(data[3]).split(',')
+            ages: String(data[3]).split(','),
+            newId: '',
+            newFName: '',
+            newLName: '',
+            newAge: ''
         });
     }
 
@@ -128,26 +148,27 @@ class App extends Component {
                     <h2>Welcome to dApp built with React</h2>
                 </div>
                 <div className="App-content">
-                    <div className="form__row-wrap">
-                        <div className="form__row">
-                            <input className="form__input30"
-                                   value={this.state.newFName}
-                                   placeholder='First Name'
-                                   onChange={event => this.setState({newFName: event.target.value})}/>
+                    <div className="form">
+                        <div className="form__row-wrap">
+                            <div className="form__row">
+                                <input className="form__input30"
+                                       value={this.state.newFName}
+                                       placeholder='First Name'
+                                       onChange={event => this.setState({newFName: event.target.value})}/>
 
-                            <input className="form__input30"
-                                   placeholder='Last Name'
-                                   onChange={event => this.setState({newLName: event.target.value})}/>
+                                <input className="form__input30"
+                                       value={this.state.newLName}
+                                       placeholder='Last Name'
+                                       onChange={event => this.setState({newLName: event.target.value})}/>
 
-                            <input className="form__input30"
-                                   placeholder='Age' type="number"
-                                   onChange={event => this.setState({newAge: event.target.value})}/>
+                                <input className="form__input30"
+                                       value={this.state.newAge}
+                                       placeholder='Age' type="number"
+                                       onChange={event => this.setState({newAge: event.target.value})}/>
+                            </div>
                         </div>
+                        <input type="button" className="form__button" value="Add Person" onClick={() => this.pushPerson()}/>
                     </div>
-
-                    <button onClick={() => this.pushPerson()}>
-                        Submit
-                    </button>
 
                     <div className="list">
                         <div className="list__row-wrap">
