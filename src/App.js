@@ -5,12 +5,16 @@ import './Form.css';
 import Web3 from 'web3';
 //import _ from 'lodash';
 
+// подключение к ноде эфириума
 var ETHEREUM_CLIENT = new Web3(new Web3.providers.HttpProvider("http://91.201.41.52:8545"));
 
+// abi контракта (при обновлении можно взять из json, сгенерированного в truffle)
 var peopleContractABI = [{"constant":true,"inputs":[],"name":"getPeople","outputs":[{"name":"","type":"uint256[]"},{"name":"","type":"bytes32[]"},{"name":"","type":"bytes32[]"},{"name":"","type":"uint256[]"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_id","type":"uint256"},{"name":"newFirstName","type":"bytes32"},{"name":"newLastName","type":"bytes32"},{"name":"newAge","type":"uint256"}],"name":"updatePerson","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"id","type":"uint256"}],"name":"dropPerson","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_id","type":"uint256"},{"name":"_firstName","type":"bytes32"},{"name":"_lastName","type":"bytes32"},{"name":"_age","type":"uint256"}],"name":"addPerson","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"people","outputs":[{"name":"id","type":"uint256"},{"name":"firstName","type":"bytes32"},{"name":"lastName","type":"bytes32"},{"name":"age","type":"uint256"}],"payable":false,"type":"function"}];
 
+// адрес контракта (при обновлении можно взять из json, сгенерированного в truffle)
 var peopleContractAddress = '0xb5008265f7ea9b584d61f4644edfa160e3d2aab6';
 
+// контракт People
 var peopleContract = ETHEREUM_CLIENT.eth.contract(peopleContractABI).at(peopleContractAddress);
 
 console.log(peopleContract);
@@ -37,13 +41,52 @@ class App extends Component {
             firstNames: [],
             lastNames: [],
             ages: [],
-            newId: '',
+            id: '',
             newFName: '',
             newLName: '',
-            newAge: ''
+            newAge: '',
+            buttonTitle: 'Add Person',
+            buttonAction: 'push'
         }
     }
 
+    // функция для получения списка из блокчейна
+    getPeopleList() {
+        let data = peopleContract.getPeople();
+        console.log('getPeopleList() : peopleContract.getPeople(); answer:', data);
+        if (document.getElementsByClassName('list__edit--inprogress').length !== 0) {
+            document.getElementsByClassName('list__edit--inprogress')[0].classList.remove('list__edit--inprogress');
+        }
+
+        if (document.getElementsByClassName('form__row--error').length !== 0) {
+            document.getElementsByClassName('form__row--error')[0].classList.remove('form__row--error');
+        }
+        this.setState({
+            ids: String(data[0]).split(','),
+            firstNames: String(data[1]).split(','),
+            lastNames: String(data[2]).split(','),
+            ages: String(data[3]).split(','),
+            newFName: '',
+            newLName: '',
+            newAge: '',
+            buttonTitle: 'Add Person',
+            buttonAction: 'push'
+        });
+    }
+
+    // функция для выбора действия кнопки "submit"
+    processSubmit() {
+        switch(this.state.buttonAction) {
+            case 'push' :
+                this.pushPerson();
+                break;
+            case 'update' :
+                this.updatePersonData();
+                break;
+        }
+    }
+
+    // добавить элемент в список
     pushPerson() {
         if (this.state.newFName === '' ||
             this.state.newLName === '' ||
@@ -59,7 +102,7 @@ class App extends Component {
                 console.log('nothing');
                 return false;
             }
-
+        console.log('pushPerson() : peopleContract.addPerson.sendTransaction(parseInt(Date.now()),this.state.newFName,this.state.newLName,this.state.newAge,{from: ETHEREUM_CLIENT.eth.accounts[0],gas: 3000000});');
         peopleContract
             .addPerson
             .sendTransaction(
@@ -74,78 +117,148 @@ class App extends Component {
         this.getPeopleList();
     }
 
-    removePerson(id) {
+    // обновить элемент
+    updatePersonData() {
+        console.log('updatePersonData() : peopleContract.updatePerson.sendTransaction(this.state.id,this.state.newFName,this.state.newLName,this.state.newAge,{from: ETHEREUM_CLIENT.eth.accounts[0],gas: 3000000});');
         peopleContract
-            .dropPerson
+            .updatePerson
             .sendTransaction(
-                id,
+                this.state.id,
+                this.state.newFName,
+                this.state.newLName,
+                this.state.newAge,
                 {
                     from: ETHEREUM_CLIENT.eth.accounts[0],
                     gas: 3000000
                 });
         this.getPeopleList();
-        console.log(id);
     }
 
-    getPeopleList() {
-        let data = peopleContract.getPeople();
-        // console.log(data);
+    // функция для выбора действия кнопки "edit"
+    editButton(button) {
+        if (!button.classList.contains('list__edit--inprogress')) {
+
+            if (document.getElementsByClassName('list__edit--inprogress').length !== 0) {
+                document.getElementsByClassName('list__edit--inprogress')[0].classList.remove('list__edit--inprogress');
+            }
+            button.classList.add('list__edit--inprogress');
+
+            if (document.getElementsByClassName('form__row--error').length !== 0) {
+                document.getElementsByClassName('form__row--error')[0].classList.remove('form__row--error');
+            }
+            button.parentNode.previousSibling.classList.add('form__row--error');
+
+            this.editPerson(button.parentNode.previousSibling);
+        } else {
+
+            button.classList.remove('list__edit--inprogress');
+            button.parentNode.previousSibling.classList.remove('form__row--error');
+
+            this.cancelEditing(button.parentNode.previousSibling);
+        }
+    }
+
+    // функция для перехода в режим редактирования элемента списка
+    editPerson(row) {
         this.setState({
-            ids: String(data[0]).split(','),
-            firstNames: String(data[1]).split(','),
-            lastNames: String(data[2]).split(','),
-            ages: String(data[3]).split(','),
-            newId: '',
-            newFName: '',
-            newLName: '',
-            newAge: ''
+            id: row.id,
+            newFName: row.childNodes[0].innerHTML,
+            newLName: row.childNodes[1].innerHTML,
+            newAge: row.childNodes[2].innerHTML,
+            buttonTitle: 'Edit Person',
+            buttonAction: 'update'
         });
     }
+
+    // функция отмены режима редактирования, возвращает в режим добавления
+    cancelEditing(row) {
+        this.setState({
+            id: '',
+            newFName: '',
+            newLName: '',
+            newAge: '',
+            buttonTitle: 'Add Person',
+            buttonAction: 'push'
+        });
+    }
+
+    // функция для удаления элемента из списка
+    // (место удаленного элемента займет последний.
+    // Нужно добавить сортировку по id при выводе списка)
+    removePerson(row) {
+        //row.classList.add('form__row--error');
+        console.log('removePerson() : peopleContract.dropPerson.sendTransaction(row.id,{from: ETHEREUM_CLIENT.eth.accounts[0],gas: 3000000});');
+        peopleContract
+            .dropPerson
+            .sendTransaction(
+                row.id,
+                {
+                    from: ETHEREUM_CLIENT.eth.accounts[0],
+                    gas: 3000000
+                });
+        this.getPeopleList();
+    }
+
+    hexToAscii(hex) {
+        var str = '',
+            i = 0,
+            l = hex.length;
+        if (hex.substring(0, 2) === '0x') {
+            i = 2;
+        }
+        for (; i < l; i+=2) {
+            var code = parseInt(hex.substr(i, 2), 16);
+            if (code === 0) continue; // this is added
+            str += String.fromCharCode(code);
+        }
+        return str;
+    };
 
     componentWillMount() {
         this.getPeopleList();
     }
 
     render() {
+
         let peopleList = [];
 
-        let hexToAscii = function(hex) {
-            var str = '',
-                i = 0,
-                l = hex.length;
-            if (hex.substring(0, 2) === '0x') {
-                i = 2;
-            }
-            for (; i < l; i+=2) {
-                var code = parseInt(hex.substr(i, 2), 16);
-                if (code === 0) continue; // this is added
-                str += String.fromCharCode(code);
-            }
-            return str;
-        };
-
-        this.state.firstNames.forEach((item, i) => {
+        if (this.state.ids[0] === '') {
             peopleList.unshift(
                 <div className="list__row-wrap">
-                    <div className="list__row">
-                        <div className="list__30">{hexToAscii(this.state.firstNames[i])}</div>
-                        <div className="list__30">{hexToAscii(this.state.lastNames[i])}</div>
-                        <div className="list__30">{this.state.ages[i]}</div>
-                    </div>
-                    <div className="list__5"
-                         id={this.state.ids[i]}
-                         onClick={event => this.removePerson(event.target.id)}>
-                            X
+                    <div className="list--empty">
+                        List is empty
                     </div>
                 </div>
             );
-        });
+        } else {
+            this.state.ids.forEach((item, i) => {
+                peopleList.unshift(
+                    <div className="list__row-wrap">
+                        <div className="list__row"  id={this.state.ids[i]}>
+                            <div className="list__30">{this.hexToAscii(this.state.firstNames[i])}</div>
+                            <div className="list__30">{this.hexToAscii(this.state.lastNames[i])}</div>
+                            <div className="list__30">{this.state.ages[i]}</div>
+                        </div>
+                        <div>
+                            <div className="list__5"
+                                 onClick={event => {this.removePerson(event.target.parentNode.previousSibling)}}>
+                                    X
+                            </div>
+                            <div className="list__edit"
+                                 onClick={event => {this.editButton(event.target)}}>
+                                    edit
+                            </div>
+                        </div>
+                    </div>
+                );
+            });
+        }
 
         return (
             <div className="App">
                 <div className="App-header">
                     <img src={logo} className="App-logo" alt="logo" />
-                    <h2>Welcome to dApp built with React</h2>
+                    <h2>CRUD dApp built with React</h2>
                 </div>
                 <div className="App-content">
                     <div className="form">
@@ -167,7 +280,7 @@ class App extends Component {
                                        onChange={event => this.setState({newAge: event.target.value})}/>
                             </div>
                         </div>
-                        <input type="button" className="form__button" value="Add Person" onClick={() => this.pushPerson()}/>
+                        <input type="button" className="form__button" value={this.state.buttonTitle} onClick={() => this.processSubmit()}/>
                     </div>
 
                     <div className="list">
@@ -178,7 +291,7 @@ class App extends Component {
                                 <div className="list__30">Age</div>
                             </div>
                         </div>
-                        <div>
+                        <div /*className="list__scroll-container"*/>
                             {peopleList}
                         </div>
                     </div>

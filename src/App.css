@@ -1,5 +1,11 @@
 .App {
     text-align: center;
+    /*height: calc(100vh - 20px);*/
+    /*overflow: hidden;*/
+}
+
+body {
+    //height: 100vh;
 }
 
 .App-logo {
@@ -21,10 +27,26 @@
 .App-content {
 }
 
+/*.list__scroll-container {
+  overflow-y: scroll;
+  overflow-x: visible;
+}*/
+
 .list {
     width: 90%;
     max-width: 500px;
-    margin: 20px auto 10px;
+    margin: 20px auto 20px;
+}
+
+.list--empty {
+    text-align: center;
+    padding: 20px 0;
+    color: #ccc;
+    position: relative;
+    border: 1px solid #ccc;
+    width: 90%;
+    transition-property: background;
+    transition-duration: 0.3s;
 }
 
 .list__head {
@@ -44,8 +66,13 @@
     transition-duration: 0.3s;
 }
 
-.list__row-wrap:hover .list__row + .list__5 {
+.list__row-wrap:hover .list__row + div .list__5 {
     color: #ccc;
+}
+
+.list__row-wrap:hover .list__row + div .list__edit {
+    color: #555;
+    background: #eee;
 }
 
 .list__row-wrap:hover .list__row {
@@ -103,6 +130,32 @@
 
 .list__5:hover {
     cursor: pointer;
+}
+
+.list__edit {
+    left: -17px;
+    margin-top: 3px;
+    position: absolute;
+    cursor: pointer;
+    color: transparent;
+    font-weight: 100;
+    border-radius: 32%;
+    font-size: 12px;
+    overflow: hidden;
+    padding: 5px;
+    color: transparent;
+    transition-property: color, background;
+    transition-duration: 0.3s;
+}
+
+.list__edit:hover {
+    cursor: pointer;
+    color: #555;
+    background: #eee;
+}
+
+.list__edit--inprogress {
+    color: #555;
 }
 
 @keyframes App-logo-spin {

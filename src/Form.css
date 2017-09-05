@@ -24,7 +24,7 @@
 }
 
 .form__row--error {
-    border: 2px solid #e66d6d;
+    border: 2px solid #e66d6d!important;
     border-radius: 2px;
 }
 
