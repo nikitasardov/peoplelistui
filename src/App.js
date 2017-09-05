@@ -107,8 +107,8 @@ class App extends Component {
             .addPerson
             .sendTransaction(
                 parseInt(Date.now()),
-                this.state.newFName,
-                this.state.newLName,
+                this.asciiToHex(this.state.newFName),
+                this.asciiToHex(this.state.newLName),
                 this.state.newAge,
                 {
                     from: ETHEREUM_CLIENT.eth.accounts[0],
@@ -124,8 +124,8 @@ class App extends Component {
             .updatePerson
             .sendTransaction(
                 this.state.id,
-                this.state.newFName,
-                this.state.newLName,
+                this.asciiToHex(this.state.newFName),
+                this.asciiToHex(this.state.newLName),
                 this.state.newAge,
                 {
                     from: ETHEREUM_CLIENT.eth.accounts[0],
@@ -165,7 +165,7 @@ class App extends Component {
             newFName: row.childNodes[0].innerHTML,
             newLName: row.childNodes[1].innerHTML,
             newAge: row.childNodes[2].innerHTML,
-            buttonTitle: 'Edit Person',
+            buttonTitle: 'Update Person',
             buttonAction: 'update'
         });
     }
@@ -198,6 +198,16 @@ class App extends Component {
                 });
         this.getPeopleList();
     }
+
+    asciiToHex(str, padding) {
+        var hex = '0x';
+        for (var i = 0; i < str.length; i++) {
+            var code = str.charCodeAt(i);
+            var n = code.toString(16);
+            hex += n.length < 2 ? '0' + n : n;
+        }
+        return hex + '0'.repeat(padding*2 - hex.length + 2);
+    };
 
     hexToAscii(hex) {
         var str = '',
